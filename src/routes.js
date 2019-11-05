@@ -8,6 +8,10 @@ import authMiddleware from './app/middlewares/auth';
 // Controller dos students
 import StudentControllers from './app/controllers/StudentControllers';
 
+// Controller dos Plans
+import PlanController from './app/controllers/PlanController';
+
+
 const routes = new Router();
 
 routes.post('/sessions', SessionController.store);
@@ -22,17 +26,17 @@ routes.post('/users', UserController.store);
 // STUDENTS
 // Create
 routes.post('/students', StudentControllers.store);
-
-// Update
 routes.put('/students/:id', StudentControllers.update);
-
-// Get student by ID
 routes.get('/students/:id', StudentControllers.show);
-
-// Get all students
 routes.get('/students', StudentControllers.show);
-
-// Delete by id
 routes.delete('/students/:id', StudentControllers.delete);
+
+//TODO fazer CRUD dos planos
+//Plans
+routes.post('/plans', PlanController.store);
+routes.put('/plan/:id', PlanController.update);
+routes.get('/plan/:id', PlanController.show);
+routes.get('/plans', PlanController.show);
+routes.delete('/plans/:id', PlanController.delete);
 
 export default routes;
