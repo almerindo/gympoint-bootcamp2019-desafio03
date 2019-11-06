@@ -6,10 +6,13 @@ import SessionController from './app/controllers/SessionController';
 import authMiddleware from './app/middlewares/auth';
 
 // Controller dos students
-import StudentControllers from './app/controllers/StudentControllers';
+import StudentController from './app/controllers/StudentController';
 
 // Controller dos Plans
 import PlanController from './app/controllers/PlanController';
+
+// Controller dos Plans
+import EnrollmentController from './app/controllers/EnrollmentController';
 
 const routes = new Router();
 
@@ -24,18 +27,24 @@ routes.post('/users', UserController.store);
 
 // STUDENTS
 // Create
-routes.post('/students', StudentControllers.store);
-routes.put('/students/:id', StudentControllers.update);
-routes.get('/students/:id', StudentControllers.show);
-routes.get('/students', StudentControllers.show);
-routes.delete('/students/:id', StudentControllers.delete);
+routes.post('/students', StudentController.store);
+routes.put('/students/:id', StudentController.update);
+routes.get('/students/:id', StudentController.show);
+routes.get('/students', StudentController.show);
+routes.delete('/students/:id', StudentController.delete);
 
-// TODO fazer CRUD dos planos
 // Plans
 routes.get('/plans', PlanController.show);
 routes.get('/plans/:id', PlanController.show);
 routes.post('/plans', PlanController.store);
 routes.put('/plans/:id', PlanController.update);
 routes.delete('/plans/:id', PlanController.delete);
+
+// Enrollments
+routes.get('/enrollments', EnrollmentController.show);
+routes.get('/enrollments/:id', EnrollmentController.show);
+routes.post('/enrollments', EnrollmentController.store);
+routes.put('/enrollments/:id', EnrollmentController.update);
+routes.delete('/enrollments/:id', EnrollmentController.delete);
 
 export default routes;
