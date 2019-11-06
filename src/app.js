@@ -1,6 +1,9 @@
 import express from 'express';
 import routes from './routes';
 
+// TODO Usar gerenciamento de erros
+// TODO Usar mailNotification para lembrar usuário
+
 // Importar a conexao com banco de dados
 import './database';
 

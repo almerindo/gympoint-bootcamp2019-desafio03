@@ -1,3 +1,4 @@
+// TODO USAR VARIAVEIS DE AMBIENTE
 module.exports = {
   dialect: 'postgres',
   host: 'localhost',

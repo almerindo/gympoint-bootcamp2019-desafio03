@@ -11,7 +11,6 @@ import StudentControllers from './app/controllers/StudentControllers';
 // Controller dos Plans
 import PlanController from './app/controllers/PlanController';
 
-
 const routes = new Router();
 
 routes.post('/sessions', SessionController.store);
@@ -31,12 +30,12 @@ routes.get('/students/:id', StudentControllers.show);
 routes.get('/students', StudentControllers.show);
 routes.delete('/students/:id', StudentControllers.delete);
 
-//TODO fazer CRUD dos planos
-//Plans
-routes.post('/plans', PlanController.store);
-routes.put('/plan/:id', PlanController.update);
-routes.get('/plan/:id', PlanController.show);
+// TODO fazer CRUD dos planos
+// Plans
 routes.get('/plans', PlanController.show);
+routes.get('/plans/:id', PlanController.show);
+routes.post('/plans', PlanController.store);
+routes.put('/plans/:id', PlanController.update);
 routes.delete('/plans/:id', PlanController.delete);
 
 export default routes;

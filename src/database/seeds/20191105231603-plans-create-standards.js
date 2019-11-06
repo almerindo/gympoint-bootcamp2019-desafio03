@@ -6,7 +6,7 @@ module.exports = {
         {
           title: 'Start',
           duration: 30,
-          price: 129,
+          price: 129.0,
           created_at: new Date(),
           updated_at: new Date(),
         },
