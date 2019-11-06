@@ -10,6 +10,7 @@ class PlanController {
   }
 
   async delete(req, res) {
+    a;
     return res.json();
   }
 

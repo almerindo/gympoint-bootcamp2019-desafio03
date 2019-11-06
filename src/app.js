@@ -1,8 +1,15 @@
-import express from 'express';
-import routes from './routes';
+// Variaveis de ambiente
+import 'dotenv/config';
 
-// TODO Usar gerenciamento de erros
-// TODO Usar mailNotification para lembrar usuário
+import express from 'express';
+
+// Gerenciamento de erros
+import Youch from 'youch';
+import * as Sentry from '@sentry/node';
+import 'express-async-errors';
+
+import routes from './routes';
+import sentryConfig from './config/sentry';
 
 // Importar a conexao com banco de dados
 import './database';
@@ -10,16 +17,32 @@ import './database';
 class App {
   constructor() {
     this.server = express();
+
+    Sentry.init(sentryConfig);
+
     this.middlewares();
     this.routes();
+    this.exceptionHandler();
   }
 
   middlewares() {
+    this.server.use(Sentry.Handlers.requestHandler());
     this.server.use(express.json());
   }
 
   routes() {
     this.server.use(routes);
+    this.server.use(Sentry.Handlers.errorHandler());
+  }
+
+  exceptionHandler() {
+    this.server.use(async (err, req, res, next) => {
+      if (process.env.NODE_ENV === 'development') {
+        const errors = await new Youch(err, req).toJSON();
+        return res.status(500).json(errors);
+      }
+      return res.status(500).json('Internal server error');
+    });
   }
 }
 
