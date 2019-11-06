@@ -87,10 +87,10 @@ class StudentController {
   async delete(req, res) {
     const { id } = req.params;
 
-    const studentExists = await Student.findOne({ where: { id } });
+    const studentExists = await Student.findByPk(id);
 
     if (!studentExists) {
-      return res.status(404).json({ error: 'This ID does not exist.' });
+      return res.status(404).json({ error: `The ID ${id} does not exist.` });
     }
 
     studentExists.destroy();
