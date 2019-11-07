@@ -8,6 +8,10 @@ import Youch from 'youch';
 import * as Sentry from '@sentry/node';
 import 'express-async-errors';
 
+// Painel de JOBS
+import BullBoard from 'bull-board';
+import Queue from './app/lib/Queue';
+
 import routes from './routes';
 import sentryConfig from './config/sentry';
 
@@ -17,6 +21,7 @@ import './database';
 class App {
   constructor() {
     this.server = express();
+    BullBoard.setQueues(Queue.queues.map(queue => queue.bull));
 
     Sentry.init(sentryConfig);
 
@@ -31,6 +36,7 @@ class App {
   }
 
   routes() {
+    this.server.use('/admin/queues', BullBoard.UI);
     this.server.use(routes);
     this.server.use(Sentry.Handlers.errorHandler());
   }
