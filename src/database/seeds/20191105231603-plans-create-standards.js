@@ -5,21 +5,21 @@ module.exports = {
       [
         {
           title: 'Start',
-          duration: 30,
+          duration: 1,
           price: 129.0,
           created_at: new Date(),
           updated_at: new Date(),
         },
         {
           title: 'Gold',
-          duration: 90,
+          duration: 3,
           price: 109,
           created_at: new Date(),
           updated_at: new Date(),
         },
         {
           title: 'Diamond',
-          duration: 180,
+          duration: 6,
           price: 89,
           created_at: new Date(),
           updated_at: new Date(),

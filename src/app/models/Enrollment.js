@@ -1,22 +1,15 @@
 import Sequelize, { Model } from 'sequelize';
-import { differenceInDays } from 'date-fns';
 
 class Enrollment extends Model {
   static init(sequelize) {
     super.init(
       {
+        student_id: Sequelize.INTEGER,
+        plan_id: Sequelize.INTEGER,
         start_date: Sequelize.DATE,
         end_date: Sequelize.DATE,
         price: Sequelize.DECIMAL(8, 2),
-
-        // TODO fazer um JOB que olha todos os dias os alunos que estão perto de
-        // vencer a matricula e manda um email avisando
-        countDays: {
-          type: Sequelize.VIRTUAL,
-          get() {
-            return differenceInDays(this.start_date, this.end_date);
-          },
-        },
+        canceled_at: Sequelize.DATE,
       },
       {
         sequelize,
