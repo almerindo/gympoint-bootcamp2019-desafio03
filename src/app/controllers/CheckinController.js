@@ -41,20 +41,23 @@ class CheckinController {
 
     // Verifica se ultrapassou a qtdade de checkins no dia
     // O usuário só pode fazer 5 checkins dentro de um período de 7 dias corridos.
-    const dateLimit = subDays(now, 7);
+    const dateLimit = subDays(now, process.env.CHECKIN_PERIOD);
 
-    const count = await Checkin.count({
-      where: {
-        student_id,
-        created_at: {
-          [Op.between]: [dateLimit, now],
+    const count =
+      (await Checkin.count({
+        where: {
+          student_id,
+          created_at: {
+            [Op.between]: [dateLimit, now],
+          },
         },
-      },
-    });
-
-    if (count > 5) {
+      })) + 1;
+    // count, pois começa de zero.
+    if (count > process.env.CHECKIN_MAX_PERMITED) {
       return res.status(400).json({
-        error: `Most of 5 checkins is not permited`,
+        error:
+          `Most of ${process.env.CHECKIN_MAX_PERMITED} checkins are not ` +
+          ` permited in ${process.env.CHECKIN_PERIOD} days`,
       });
     }
 
@@ -64,25 +67,18 @@ class CheckinController {
 
   async show(req, res) {
     const { student_id } = req.params;
-    const students = await Checkin
-      .findAll
-      //   {
-      //   where: {
-      //     student_id,
-      //   },
-      // }
-      ();
+    const students = await Checkin.findAll({
+      where: {
+        student_id,
+      },
+    });
 
-    // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', students);
+    if (students.length === 0) {
+      return res.status(404).json({
+        error: `This student has never checked in or does not exists`,
+      });
+    }
 
-    // if (!students) {
-    //   return res
-    //     .status(404)
-    //     .json({ error: `This student has never checked in` });
-    // }
-
-    // const { id, updated_at } = students;
-    // const data = { id, student_id, updated_at };
     return res.json(students);
   }
 }

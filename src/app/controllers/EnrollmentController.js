@@ -2,7 +2,6 @@ import * as Yup from 'yup';
 import EnrollmentHandler from './EnrollmentHandler';
 import Enrollment from '../models/Enrollment';
 
-// TODO Codificar o CRUD
 class EnrollmentController {
   async store(req, res) {
     // Do many tests and return msg cod and payload
@@ -93,6 +92,7 @@ class EnrollmentController {
     });
   }
 
+  // TODO COlocar paginação
   async show(req, res) {
     const enrollmentID = req.params.id;
 

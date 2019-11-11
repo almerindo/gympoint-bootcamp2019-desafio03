@@ -6,7 +6,6 @@ export default {
     attemps: 3,
   },
   async handle({ data }) {
-    // TODO configurar corretamente a captura dos dados
     const { name, email, title, price, end_date, start_date } = data;
 
     await Mail.sendMail({

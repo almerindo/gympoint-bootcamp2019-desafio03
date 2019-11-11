@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { parseISO, addMonths, isBefore } from 'date-fns';
+import { parseISO, addMonths, isBefore, startOfDay } from 'date-fns';
 import { Op } from 'sequelize';
 
 import Student from '../models/Student';
@@ -7,6 +7,8 @@ import Plan from '../models/Plan';
 import Enrollment from '../models/Enrollment';
 
 import Queue from '../lib/Queue';
+
+// FIXME Melhorar codigo de Enrollments
 
 class EnrollmentHandle {
   async calcEndDate(start_date, duration) {
@@ -29,7 +31,7 @@ class EnrollmentHandle {
 
     // check if is in the past
     const start_date = parseISO(req.body.start_date);
-    if (isBefore(start_date, new Date())) {
+    if (isBefore(startOfDay(start_date), startOfDay(new Date()))) {
       return { cod: 401, payload: 'Past dates are not permited' };
     }
 
@@ -54,7 +56,11 @@ class EnrollmentHandle {
     // calc end_date and Check if overlap some active enroolment
     const end_date = addMonths(start_date, plan.duration);
 
-    const overlaps = await this.isEnrollmentExists(start_date, end_date);
+    const overlaps = await this.isEnrollmentExists(
+      req.body.student_id,
+      start_date,
+      end_date
+    );
     if (overlaps) {
       return {
         cod: 400,
@@ -69,9 +75,10 @@ class EnrollmentHandle {
     return { cod: 200, payload };
   }
 
-  async isEnrollmentExists(startDate, endDate) {
+  async isEnrollmentExists(student_id, startDate, endDate) {
     const existsEnrollment = await Enrollment.count({
       where: {
+        student_id,
         canceled_at: null,
         [Op.or]: [
           {
