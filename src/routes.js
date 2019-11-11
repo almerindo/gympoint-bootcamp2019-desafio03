@@ -8,12 +8,12 @@ import authMiddleware from './app/middlewares/auth';
 // Controller dos students
 import StudentController from './app/controllers/StudentController';
 
-// Controller dos Plans
+// Controllers
 import PlanController from './app/controllers/PlanController';
-
-// Controller dos Plans
 import EnrollmentController from './app/controllers/EnrollmentController';
 import CheckinController from './app/controllers/CheckinController';
+import HelpOrderController from './app/controllers/HelpOrderController';
+import HelpOrderAnswerController from './app/controllers/HelpOrderAnswerController';
 
 const routes = new Router();
 
@@ -23,10 +23,17 @@ routes.post('/sessions', SessionController.store);
 routes.post('/students/:student_id/checkins', CheckinController.store);
 routes.get('/students/:student_id/checkins', CheckinController.show);
 
+// Rotas para help_orders
+routes.post('/students/:id/help-orders', HelpOrderController.store);
+routes.get('/students/:id/help-orders', HelpOrderController.show);
+
 // Este middleare global só funciona para as rotas que estiverem a baixo dele.
 routes.use(authMiddleware);
 
-// USERS!
+// Rota para resposta da help-orders, exige login
+routes.post('/help-orders/:id/answer', HelpOrderAnswerController.store);
+
+// USERS
 routes.put('/users', UserController.update);
 routes.post('/users', UserController.store);
 
