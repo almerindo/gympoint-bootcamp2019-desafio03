@@ -1,4 +1,6 @@
-import Sequelize, { Model } from 'sequelize';
+import Sequelize, { Model, Op } from 'sequelize';
+import Plan from './Plan';
+import Student from './Student';
 
 class Enrollment extends Model {
   static init(sequelize) {
@@ -22,6 +24,69 @@ class Enrollment extends Model {
   static associate(models) {
     this.belongsTo(models.Student, { foreignKey: 'student_id', as: 'student' });
     this.belongsTo(models.Plan, { foreignKey: 'plan_id', as: 'plan' });
+  }
+
+  static findAllNotCanceled() {
+    return this.findAll({
+      where: { canceled_at: null },
+      attributes: ['id', 'price', 'start_date', 'end_date'],
+      include: [
+        {
+          model: Plan,
+          as: 'plan',
+          attributes: ['id', 'title', 'price', 'duration'],
+        },
+        {
+          model: Student,
+          as: 'student',
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+    });
+  }
+
+  static getById(key) {
+    return this.findOne({
+      where: {
+        canceled_at: null,
+        id: key,
+      },
+      attributes: ['id', 'price', 'start_date', 'end_date'],
+      include: [
+        {
+          model: Plan,
+          as: 'plan',
+          attributes: ['id', 'title', 'price', 'duration'],
+        },
+        {
+          model: Student,
+          as: 'student',
+          attributes: ['id', 'name', 'email'],
+        },
+      ],
+    });
+  }
+
+  static checkIfOverlaps(startDate, endDate) {
+    return (
+      Enrollment.count({
+        where: {
+          canceled_at: null,
+          [Op.or]: [
+            {
+              start_date: {
+                [Op.between]: [startDate, endDate],
+              },
+            },
+            {
+              end_date: {
+                [Op.between]: [startDate, endDate],
+              },
+            },
+          ],
+        },
+      }) > 0
+    );
   }
 }
 export default Enrollment;

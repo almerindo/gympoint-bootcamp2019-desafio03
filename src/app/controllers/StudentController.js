@@ -85,6 +85,14 @@ class StudentController {
   }
 
   async delete(req, res) {
+    const schema = Yup.object().shape({
+      id: Yup.number().required(),
+    });
+
+    if (!(await schema.isValid(req.params))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
     const { id } = req.params;
 
     const studentExists = await Student.findByPk(id);

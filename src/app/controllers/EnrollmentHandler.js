@@ -10,7 +10,7 @@ import Queue from '../lib/Queue';
 
 class EnrollmentHandle {
   async calcEndDate(start_date, duration) {
-    return addMonths(parseISO(start_date), duration);
+    return addMonths(start_date, duration);
   }
 
   async check(req) {
@@ -22,32 +22,51 @@ class EnrollmentHandle {
         .required(),
     });
 
+    // check if the req.body is valid
     if (!(await schema.isValid(req.body))) {
-      return { cod: 401, value: 'Validation fails' };
+      return { cod: 401, payload: 'Validation fails' };
     }
 
+    // check if is in the past
     const start_date = parseISO(req.body.start_date);
     if (isBefore(start_date, new Date())) {
-      return { cod: 401, value: 'Past dates are not permited' };
+      return { cod: 401, payload: 'Past dates are not permited' };
     }
 
+    // check if student exist
     const student = await Student.findByPk(req.body.student_id);
     if (!student) {
       return {
         cod: 404,
-        value: `Student ID ${req.body.student_id} does not extists.`,
+        payload: `Student ID ${req.body.student_id} does not extists.`,
       };
     }
 
+    // check if the plan exist
     const plan = await Plan.findByPk(req.body.plan_id);
     if (!plan) {
       return {
         cod: 404,
-        value: `Plan ID ${req.body.plan_id} does not extists.`,
+        payload: `Plan ID ${req.body.plan_id} does not extists.`,
       };
     }
 
-    return { cod: 200, student, plan };
+    // calc end_date and Check if overlap some active enroolment
+    const end_date = addMonths(start_date, plan.duration);
+
+    const overlaps = await this.isEnrollmentExists(start_date, end_date);
+    if (overlaps) {
+      return {
+        cod: 400,
+        payload:
+          `The interval (Start: ${start_date}  / End: ${end_date})` +
+          ` Overlaps a active enrollment `,
+      };
+    }
+
+    const payload = { student, plan, start_date, end_date };
+    // if all ok, then return
+    return { cod: 200, payload };
   }
 
   async isEnrollmentExists(startDate, endDate) {
@@ -73,9 +92,8 @@ class EnrollmentHandle {
 
   async add(data) {
     const { start_date, end_date, price, student, plan } = data;
+
     // Store
-    // TODO Melhorar o Enrolment para já retornar um objeto com suas associacoes
-    // Deveria addicionar e colocar a option include...
     const enrollment = await Enrollment.create({
       start_date,
       end_date,

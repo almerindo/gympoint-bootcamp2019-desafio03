@@ -13,10 +13,15 @@ import PlanController from './app/controllers/PlanController';
 
 // Controller dos Plans
 import EnrollmentController from './app/controllers/EnrollmentController';
+import CheckinController from './app/controllers/CheckinController';
 
 const routes = new Router();
 
 routes.post('/sessions', SessionController.store);
+
+// Rotas para chekin
+routes.post('/students/:student_id/checkins', CheckinController.store);
+routes.get('/students/:student_id/checkins', CheckinController.show);
 
 // Este middleare global só funciona para as rotas que estiverem a baixo dele.
 routes.use(authMiddleware);
