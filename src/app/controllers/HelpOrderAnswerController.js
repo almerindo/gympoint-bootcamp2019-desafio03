@@ -3,6 +3,8 @@ import * as Yup from 'yup';
 import HelpOrder from '../models/HelpOrder';
 import Student from '../models/Student';
 
+import Queue from '../lib/Queue';
+
 class HelpOrderAnswerController {
   async store(req, res) {
     const { id } = req.params;
@@ -28,8 +30,17 @@ class HelpOrderAnswerController {
 
     helpOrder.answer = answer;
     helpOrder.updated_at = new Date();
+    await helpOrder.save();
+    const { name, email } = await Student.findByPk(helpOrder.student_id);
 
-    return res.json(await helpOrder.save());
+    await Queue.add('HelpOrderAnswered', {
+      name,
+      email,
+      id_helpOrder: helpOrder.id,
+      question: helpOrder.question,
+      answer,
+    });
+    return res.json();
   }
 }
 export default new HelpOrderAnswerController();
